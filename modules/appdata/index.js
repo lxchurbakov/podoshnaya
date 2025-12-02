@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const WORKDIR = process.cwd();
-const APPDIR = path.resolve(WORKDIR, '__data');
+const APPDIR = path.resolve(__dirname, '__data');
 
 const request = (name) => {
     const dir = path.resolve(APPDIR, name);
@@ -11,10 +11,14 @@ const request = (name) => {
 
     return {
         save: (name, blob) => {
-            return fs.writeFileSync(path.resolve(dir, name), blob);
+            return fs.writeFileSync(path.resolve(dir, name), JSON.stringify(blob));
         },
-        load: (name) => {
-            return fs.readFileSync(path.resolve(dir, name));
+        load: (name, d) => {
+            try {
+                return JSON.parse(fs.readFileSync(path.resolve(dir, name)));
+            } catch (e) {
+                return d;
+            }
         },
         has: (name) => {
             return fs.statSync(path.resolve(dir, name)).isFile();

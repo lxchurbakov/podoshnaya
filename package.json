@@ -2,11 +2,17 @@
   "name": "podoshnaya",
   "version": "1.0.0",
   "main": "index.js",
+  "bin": {
+    "p8a": "./index.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "commander": "^14.0.2"
+  }
 }

@@ -1,17 +1,25 @@
-const net = require('net');
-const appdata = require('../appdata');
+// const net = require('net');
+// const appdata = require('../appdata');
+const stpcp = require('../../modules/stpcp');
 
 const start = (port) => {
-    const pods = appdata.request('pods/root');
+    // const pods = appdata.request('pods/root');
 
-    stpcp.create(port, (socket) => {
-        // console.log('connected');
+    stpcp.server(port, (socket) => {
+        console.log('client connected');
 
         socket.on('data', (data) => {
-            if (data === 'ping') {
-                socket.emit('data', 'pong');
-            }
+            // if (data === 'ping') {
+            //     socket.emit('data', 'pong');
+            // }
+            console.log('data received', { data });
         }); 
+
+        socket.write('SUP MATE');
+
+        socket.on('close', () => {
+            console.log('client disconnected');
+        });
         
         // 
         
