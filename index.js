@@ -56,6 +56,22 @@ remote
         }
     });
 
+const pod_command = require('./commands/pod');
+
+const pod = program
+    .command('pod')
+    .description('pod managing');
+
+pod 
+    .command('push')
+    .description('pushes jspod to p8a')
+    .argument('<origin>', 'name of the origin')
+    .argument('<name>', 'name of the pod')
+    .argument('<file>', 'file')
+    .action((origin, name, file) => {
+        pod_command.push(origin, name, file);
+    });
+
 program.parse();
 
 

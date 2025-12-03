@@ -1,5 +1,6 @@
 // const net = require('net');
 // const appdata = require('../appdata');
+const manager = require('../../modules/manager');
 const stpcp = require('../../modules/stpcp');
 
 const start = (port) => {
@@ -9,13 +10,19 @@ const start = (port) => {
         console.log('client connected');
 
         socket.on('data', (data) => {
+            if (data?.type === 'push') {
+                const { name, content } = data;
+
+                manager.push(name, content);
+            }
             // if (data === 'ping') {
-            //     socket.emit('data', 'pong');
+            //     socket.write('pong');
             // }
-            console.log('data received', { data });
+
+            // console.log('data received', { data });
         }); 
 
-        socket.write('SUP MATE');
+        // socket.write('SUP MATE');
 
         socket.on('close', () => {
             console.log('client disconnected');

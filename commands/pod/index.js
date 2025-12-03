@@ -1,9 +1,33 @@
-const vm = require('../vm');
-// TODO use stpcp
+// const vm = require('../vm');
+const stpcp = require('../../modules/stpcp');
+const remote = require('../remote');
+const fs = require('fs');
 
-const push = (name, filename) => {
-    // todo origin
-    // connect and push stuff
+const push = (origin, name, filename) => {
+    const list = remote.list();
+    const url = list[origin];
+
+    if (!url) {
+        throw new Error(`no origin ${origin}`);
+    }
+
+    const [host, port] = url.split(':');
+
+    const client = stpcp.client(port, host);
+
+    if (!client) {
+         throw new Error(`cant establish connection with ${host}:${port}`);
+    }
+
+    // push our pod
+    const content = fs.readFileSync(filename);
+
+    client.write({ type: 'push', name, content });
+
+    // client.on('data', console.log);
+
+    // client.write('ping');
+    // send ping
 };
 
 const start = (name) => {

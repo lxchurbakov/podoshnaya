@@ -43,7 +43,7 @@ const client = (port, host) => {
 
     socket.connect(port, host, () => {
         socket.on('data', (data) => {
-            emit(JSON.parse(data));
+            emit('data', JSON.parse(data));
         });
 
         socket.on('close', () => {
