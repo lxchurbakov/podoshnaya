@@ -62,7 +62,36 @@ const client = (port, host) => {
     return { close, on, write }
 };
 
-module.exports = { server, client };
+const call = (s, name, ...args) => {
+    const id = Math.random();
+
+    return new Promise((resolve, reject) => {
+        s.on('data', (m) => {
+            if (m.type === `vf/${name}/resolve` && m.id === id) {
+                resolve(m.result);
+            }
+
+            if (m.type === `vf/${name}/reject` && m.id === id) {
+                reject(m.error);
+            }
+        });
+
+        s.write({ type: `vf/${name}/call`, args, id });
+    });
+    
+};
+
+const register = (s, name, predicate) => {
+    s.on('data', (m) => {
+        if (m.type === `vf/${name}/call`) {
+            Promise.resolve(predicate(...m.args))
+                .then((result) => s.write({ type: `vf/${name}/resolve`, result, id: m.id }))
+                .catch((error) => s.write({ type: `vf/${name}/reject`, error: String(error), id: m.id }));
+        }
+    });
+};
+
+module.exports = { server, client, call, register };
 
 
 // const net = require('net');

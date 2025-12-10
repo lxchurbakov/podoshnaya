@@ -1,85 +1,71 @@
-// const net = require('net');
-// const appdata = require('../appdata');
 const manager = require('../../modules/manager');
 const stpcp = require('../../modules/stpcp');
 
 const start = (port) => {
-    // const pods = appdata.request('pods/root');
-
+    // Start the server
+    // TODO make into rpc config module
+    // merge server and register
     stpcp.server(port, (socket) => {
-        console.log('client connected');
+        stpcp.register(socket, 'push', (name, content) => {
+            return manager.push(name, content);
+        });
 
-        socket.on('data', (data) => {
-            if (data?.type === 'push') {
-                const { name, content } = data;
+        stpcp.register(socket, 'start', async (name) => {
+            return manager.start(name);
+        });
 
-                manager.push(name, content);
-            }
-            // if (data === 'ping') {
-            //     socket.write('pong');
-            // }
+        stpcp.register(socket, 'stop', async (name) => {
+            return manager.stop(name);
+        });
 
-            // console.log('data received', { data });
-        }); 
+        stpcp.register(socket, 'status', async (name) => {
+            return manager.status(name);
+        });
 
-        // socket.write('SUP MATE');
-
-        socket.on('close', () => {
-            console.log('client disconnected');
+        stpcp.register(socket, 'remove', async (name) => {
+            return manager.remove(name);
         });
         
-        // 
-        
-        // socket.emit('close') -- to close ???
-        // кажется кринж, нужно
-        // socket.close()
-        // плюс socket.on('close') тоже надо
+        // console.log('client connected', socket);
+        // TODO resolve/reject handling
+        // TODO this needs to be done one abstraction on top of it
+        socket.on('data', async (data) => {
+            // if (data?.type === 'push') {
+            //     const { name, content } = data;
 
-        // socket.status ещё бы какой-нибудь
+            //     manager.push(name, content);
+            // }
 
+            // if (data?.type === 'start') {
+            //     const { name } = data;
 
-        // callback({ emit});
+            //     manager.start(name);
+            // }
 
+            // if (data?.type === 'stop') {
+            //     const { name } = data;
 
-        
-        // let code = '';
+            //     manager.stop(name);
+            // }
 
-        // socket.on('data', (data) => {
-        //     code += data.toString();
+            // if (data?.type === 'status') {
+            //     const { name } = data;
+            //     const status = manager.status(name);
+
+            //     socket.write({ type: 'status', name, status });
+            // }
+
+            if (data?.type === 'remove') {
+                const { name } = data;
+
+                manager.remove(name);
+            }
+        });
+
+        // socket.on('close', () => {
+        //     console.log('client disconnected', socket);
         // });
-        
-        // socket.on('end', () => {
-        //     pods.save('pod', code);
-        //     // console.log('run', { code })
-        //     // Save and execute the received code
-        //     // run(code).then((output) => {
-        //     //     console.log({ output });
-        //     // }).catch((err) => {
-        //     //     console.error(error);
-        //     // });
-        //     // const filename = __dirname + '/' + `temp_${Date.now()}.js`;
-
-        //     // fs.writeFileSync(filename, code);
-            
-        //     // exec(`node ${filename}`, (error, stdout, stderr) => {
-        //     //   let result = '';
-        //     //   if (error) result += `Error: ${error.message}\n`;
-        //     //   if (stderr) result += `Stderr: ${stderr}\n`;
-        //     //   if (stdout) result += `Output: ${stdout}\n`;
-            
-        //     //   socket.write(result);
-        //     //   socket.end();
-            
-        //     //   // Clean up
-        //     //   fs.unlinkSync(filename);
-        //     // });
-        // });
-
-        // // on start we run them
-        // // and the can create p8a's
     });
-
-    // pods.save('pod', code);
 };
 
 module.exports = { start };

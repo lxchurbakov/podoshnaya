@@ -72,6 +72,42 @@ pod
         pod_command.push(origin, name, file);
     });
 
+pod 
+    .command('start')
+    .description('starts jspod to p8a')
+    .argument('<origin>', 'name of the origin')
+    .argument('<name>', 'name of the pod')
+    .action((origin, name) => {
+        pod_command.start(origin, name);
+    });
+
+pod 
+    .command('status')
+    .description('status of jspod to p8a')
+    .argument('<origin>', 'name of the origin')
+    .argument('<name>', 'name of the pod')
+    .action((origin, name) => {
+        pod_command.status(origin, name);
+    });
+
+pod 
+    .command('stop')
+    .description('stops of jspod to p8a')
+    .argument('<origin>', 'name of the origin')
+    .argument('<name>', 'name of the pod')
+    .action((origin, name) => {
+        pod_command.stop(origin, name);
+    });
+
+pod 
+    .command('remove')
+    .description('removes of jspod to p8a')
+    .argument('<origin>', 'name of the origin')
+    .argument('<name>', 'name of the pod')
+    .action((origin, name) => {
+        pod_command.remove(origin, name);
+    });
+
 program.parse();
 
 
